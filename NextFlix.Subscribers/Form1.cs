@@ -8,7 +8,6 @@ namespace NextFlix.Subscribers
 	public partial class Form1 : Form
 	{
 		private RabbitMqConnectionManager _connectionManager;
-		private RabbitMqService _rabbitMqService;
 		private CountryReceived _countryReceived;
 		private TagReceived _tagReceived;
 		private CategoryReceived _categoryReceived;
@@ -17,10 +16,23 @@ namespace NextFlix.Subscribers
 		private SourceReceived _sourceReceived;
 		private UserReceived _userReceived;
 		private IRedisService _redisService;
+		private MovieReceived _movieReceived;
+		private IRabbitMqService _rabbitMqService;
 
 
 
-		public Form1(IRedisService redisService, CountryReceived countryReceived, TagReceived tagReceived, CategoryReceived categoryReceived, ChannelReceived channelReceived, CastReceived castReceived, SourceReceived sourceReceived, UserReceived userReceived)
+		public Form1(
+			IRedisService redisService,
+			IRabbitMqService rabbitMqService,
+			CountryReceived countryReceived,
+			TagReceived tagReceived,
+			CategoryReceived categoryReceived,
+			ChannelReceived channelReceived,
+			CastReceived castReceived,
+			SourceReceived sourceReceived,
+			UserReceived userReceived,
+			MovieReceived movieReceived
+			)
 		{
 
 			_countryReceived = countryReceived;
@@ -31,6 +43,8 @@ namespace NextFlix.Subscribers
 			_sourceReceived = sourceReceived;
 			_userReceived = userReceived;
 			_redisService = redisService;
+			_movieReceived = movieReceived;
+			_rabbitMqService = rabbitMqService;
 			_redisService.OnConnectionStatusChanged += RedisService_OnConnectionStatusChanged;
 			InitializeComponent();
 		}
@@ -45,9 +59,6 @@ namespace NextFlix.Subscribers
 
 		private async Task Connect()
 		{
-			_connectionManager = new RabbitMqConnectionManager();
-			var connection = await _connectionManager.GetConnection();
-			_rabbitMqService = new RabbitMqService(connection);
 			await Task.WhenAll(
 				_rabbitMqService.Subscribe("Countries", _countryReceived.Received),
 				_rabbitMqService.Subscribe("Tags", _tagReceived.Received),
@@ -55,7 +66,8 @@ namespace NextFlix.Subscribers
 				_rabbitMqService.Subscribe("Channels", _channelReceived.Received),
 				_rabbitMqService.Subscribe("Casts", _castReceived.Received),
 				_rabbitMqService.Subscribe("Sources", _sourceReceived.Received),
-				_rabbitMqService.Subscribe("Users", _userReceived.Received)
+				_rabbitMqService.Subscribe("Users", _userReceived.Received),
+				_rabbitMqService.Subscribe("Movies", _movieReceived.Received)
 				);
 
 		}
@@ -74,14 +86,6 @@ namespace NextFlix.Subscribers
 				await Connect();
 			});
 			btnStart.Enabled = false;
-			btnStop.Enabled = true;
-		}
-
-		private void btnStop_Click(object sender, EventArgs e)
-		{
-
-			btnStop.Enabled = false;
-			btnStart.Enabled = true;
 		}
 	}
 }

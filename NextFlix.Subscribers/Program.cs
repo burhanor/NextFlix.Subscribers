@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NextFlix.Subscribers.ConfigurationManagers;
 using NextFlix.Subscribers.Helpers;
 using NextFlix.Subscribers.Interfaces;
 using NextFlix.Subscribers.Receiveds;
@@ -33,6 +34,14 @@ namespace NextFlix.Subscribers
 
 			var services = new ServiceCollection();
 			services.AddSingleton<IRedisService, RedisService>();
+			services.AddSingleton<IMeiliSearchService, MeiliSearchService>();
+			services.AddSingleton<RabbitMqConnectionManager>();
+			services.AddSingleton<IRabbitMqService, RabbitMqService>(sp =>
+			{
+				var connectionManager = sp.GetRequiredService<RabbitMqConnectionManager>();
+				var connection = connectionManager.GetConnection().GetAwaiter().GetResult(); 
+				return new RabbitMqService(connection);
+			});
 			services.AddSingleton<CountryReceived>();
 			services.AddSingleton<CategoryReceived>();
 			services.AddSingleton<ChannelReceived>();
@@ -40,6 +49,8 @@ namespace NextFlix.Subscribers
 			services.AddSingleton<CastReceived>();
 			services.AddSingleton<SourceReceived>();
 			services.AddSingleton<UserReceived>();
+			services.AddSingleton<MovieReceived>();
+			services.AddTransient<MovieService>();
 			services.AddSingleton<Form1>(); 
 
 			var serviceProvider = services.BuildServiceProvider();

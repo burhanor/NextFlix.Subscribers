@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NextFlix.Subscribers.Enums;
 
 namespace NextFlix.Subscribers.Interfaces
 {
 	public interface IRabbitMqService
 	{
+		Task Subscribe(string queueName, Func<string, RoutingKey, Task<bool>> onMessageReceived);
+		Task Publish(RabbitMqQueues exchange, RoutingKey routingType, object message, CancellationToken cancellationToken);
 	}
 }

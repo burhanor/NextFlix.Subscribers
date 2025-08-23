@@ -1,21 +1,52 @@
 ﻿using NextFlix.Subscribers.Enums;
 using NextFlix.Subscribers.Helpers;
+using NextFlix.Subscribers.Interfaces;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Text.Json;
 
 namespace NextFlix.Subscribers.Services
 {
 	
-	public class RabbitMqService
+	public class RabbitMqService:IRabbitMqService
 	{
 		private readonly IConnection _connection;
 
 
+		private  IChannel? _channel;
+
+		private bool _connected;
+		BasicProperties properties = new BasicProperties()
+		{
+			DeliveryMode = DeliveryModes.Persistent
+		};
 		public RabbitMqService(IConnection connection)
 		{
 			_connection = connection;
+
 		}
+
+		public async Task Connect(CancellationToken cancellationToken)
+		{
+			if (_connected)
+				return;
+			try
+			{
+				if (_connected)
+					return;
+
+				_channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+
+				_connected = true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"RabbitMQ connection error: {ex.Message}");
+				throw;
+			}
+		}
+
 
 		public async Task Subscribe(string queueName, Func<string,RoutingKey, Task<bool>> onMessageReceived)
 		{
@@ -66,5 +97,42 @@ namespace NextFlix.Subscribers.Services
 			}
 			
 		}
+
+
+		public async Task Publish(RabbitMqQueues exchange, RoutingKey routingType, object message, CancellationToken cancellationToken)
+		{
+			string exchangeName = exchange.ToString();
+			string routingKey = routingType.ToString();
+			string queueName = exchange.ToString();
+
+			if (!_connected || _channel is null)
+			{
+				await Connect(cancellationToken);
+			}
+
+			try
+			{
+				
+
+				var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+
+
+
+				await _channel.BasicPublishAsync(
+					exchange: exchangeName,
+					routingKey: routingKey,
+					mandatory: false,
+					basicProperties: properties,
+					body: body,
+					cancellationToken: cancellationToken
+				);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Publish error: {ex.Message}");
+				throw;
+			}
+		}
+
 	}
 }

@@ -1,10 +1,29 @@
 ﻿using NextFlix.Subscribers.Enums;
 using NextFlix.Subscribers.Interfaces;
 using NextFlix.Subscribers.Models;
+using NextFlix.Subscribers.Services;
+using System.Text.Json;
 
 namespace NextFlix.Subscribers.Receiveds
 {
-	public class CategoryReceived(IRedisService redisService) : GenericRedisReceived<CategoryModel>(redisService, RedisPrefix.Category)
+	public class CategoryReceived(IRedisService redisService,MovieService movieService,IRabbitMqService rabbitMqService) : GenericRedisReceived<CategoryModel>(redisService, RedisPrefix.Category)
 	{
+		public override async Task<bool> Upsert(string message)
+		{
+			CategoryModel? model = JsonSerializer.Deserialize<CategoryModel>(message);
+			if (model is null)
+				return false;
+
+			List<int> movieIds = await movieService.GetMovieIdFromCategoryId(model.Id);
+			if (movieIds?.Count > 0)
+			{
+				foreach (var id in movieIds)
+				{
+					await rabbitMqService.Publish(RabbitMqQueues.Movies, RoutingKey.Updated, new IdModel { Id = id }, CancellationToken.None);
+				}
+			}
+
+			return await base.Upsert(message);
+		}
 	}
 }

@@ -30,7 +30,6 @@
 		{
 			btnStart = new Button();
 			lblRedisStatus = new Label();
-			btnStop = new Button();
 			SuspendLayout();
 			// 
 			// btnStart
@@ -52,23 +51,11 @@
 			lblRedisStatus.TabIndex = 1;
 			lblRedisStatus.Text = "Redis";
 			// 
-			// btnStop
-			// 
-			btnStop.Enabled = false;
-			btnStop.Location = new Point(42, 41);
-			btnStop.Name = "btnStop";
-			btnStop.Size = new Size(75, 23);
-			btnStop.TabIndex = 2;
-			btnStop.Text = "Durdur";
-			btnStop.UseVisualStyleBackColor = true;
-			btnStop.Click += btnStop_Click;
-			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(1422, 622);
-			Controls.Add(btnStop);
 			Controls.Add(lblRedisStatus);
 			Controls.Add(btnStart);
 			Name = "Form1";
@@ -82,6 +69,5 @@
 
 		private Button btnStart;
 		private Label lblRedisStatus;
-		private Button btnStop;
 	}
 }
