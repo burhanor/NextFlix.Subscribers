@@ -17,6 +17,9 @@ namespace NextFlix.Subscribers
 		private UserReceived _userReceived;
 		private IRedisService _redisService;
 		private MovieReceived _movieReceived;
+		private MovieLikeReceived _movieLikesReceived;
+		private MovieViewReceived _movieViewsReceived;
+		private HangfireService _hangfireService;
 		private IRabbitMqService _rabbitMqService;
 
 
@@ -31,7 +34,10 @@ namespace NextFlix.Subscribers
 			CastReceived castReceived,
 			SourceReceived sourceReceived,
 			UserReceived userReceived,
-			MovieReceived movieReceived
+			MovieReceived movieReceived,
+			MovieLikeReceived movieLikesReceived,
+			MovieViewReceived movieViewsReceived,
+			HangfireService hangfireService
 			)
 		{
 
@@ -45,8 +51,11 @@ namespace NextFlix.Subscribers
 			_redisService = redisService;
 			_movieReceived = movieReceived;
 			_rabbitMqService = rabbitMqService;
+			_movieLikesReceived = movieLikesReceived;
+			_movieViewsReceived = movieViewsReceived;
 			_redisService.OnConnectionStatusChanged += RedisService_OnConnectionStatusChanged;
 			InitializeComponent();
+			_hangfireService = hangfireService;
 		}
 		private void RedisService_OnConnectionStatusChanged(object sender, bool isConnected)
 		{
@@ -67,7 +76,9 @@ namespace NextFlix.Subscribers
 				_rabbitMqService.Subscribe("Casts", _castReceived.Received),
 				_rabbitMqService.Subscribe("Sources", _sourceReceived.Received),
 				_rabbitMqService.Subscribe("Users", _userReceived.Received),
-				_rabbitMqService.Subscribe("Movies", _movieReceived.Received)
+				_rabbitMqService.Subscribe("Movies", _movieReceived.Received),
+				_rabbitMqService.Subscribe("MovieLikes", _movieLikesReceived.Received),
+				_rabbitMqService.Subscribe("MovieViews", _movieViewsReceived.Received)
 				);
 
 		}

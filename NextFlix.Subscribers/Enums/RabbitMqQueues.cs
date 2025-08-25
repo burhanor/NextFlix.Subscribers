@@ -9,6 +9,8 @@
 		Casts,
 		Sources,
 		Users,
-		Movies
+		Movies,
+		MovieLikes,
+		MovieViews
 	}
 }

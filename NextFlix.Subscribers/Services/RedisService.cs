@@ -157,6 +157,23 @@ namespace NextFlix.Subscribers.Services
 				return false;
 			}
 		}
+
+		public async Task<List<int>> HashGetAsync(string hashKey)
+		{
+			List<int> result = new List<int>();
+			try
+			{
+				HashEntry[] entries = await _db.HashGetAllAsync(hashKey);
+				result = entries.Select(entry => (int)entry.Name).ToList();
+			}
+			catch (Exception ex)
+			{
+				LogHelper.ExceptionLog(ex);
+			}
+
+			return result;
+
+		}
 		
 	}
 }

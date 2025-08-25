@@ -9,6 +9,8 @@
 		Cast,
 		Source,
 		User,
-		Movie
+		Movie,
+		MovieLike,
+		MovieView
 	}
 }

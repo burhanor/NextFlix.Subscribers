@@ -5,6 +5,6 @@ namespace NextFlix.Subscribers.Models.Movie
 	public class MovieVoteResponse
 	{
 		public VoteType Vote { get; set; }
-		public int VoteCount { get; set; }
+		public int UniqueVoteCount { get; set; }
 	}
 }

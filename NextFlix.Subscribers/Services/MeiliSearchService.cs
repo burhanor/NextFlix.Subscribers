@@ -95,8 +95,8 @@ namespace NextFlix.Subscribers.Services
 				CountryIds = movie.Countries?.Count(m => m.Status == Enums.Status.ACCEPTED) > 0 ? movie.Countries.Where(m => m.Status == Enums.Status.ACCEPTED).Select(c => c.Id).ToList() : [],
 				CastIds = movie.Casts?.Count(m => m.Status == Enums.Status.ACCEPTED) > 0 ? movie.Casts.Where(m => m.Status == Enums.Status.ACCEPTED).Select(c => c.Id).ToList() : [],
 				ViewCount = movie.ViewCount,
-				Rating = movie.Votes != null && movie.Votes.Count > 0 ? movie.Votes.Sum(v => (int)v.Vote * v.VoteCount)
-				/ (double)movie.Votes.Sum(v => v.VoteCount) : 50
+				Rating = movie.Votes != null && movie.Votes.Count > 0 ? movie.Votes.Sum(v => (int)v.Vote * v.UniqueVoteCount)
+				/ (double)movie.Votes.Sum(v => v.UniqueVoteCount) : 50
 
 			};
 		}

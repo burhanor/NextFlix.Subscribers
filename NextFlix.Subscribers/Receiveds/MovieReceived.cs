@@ -57,6 +57,8 @@ namespace NextFlix.Subscribers.Receiveds
 				if (result)
 				{
 					result = await redisService.HashDeleteAsync($"{RedisPrefix.Movie}", ids);
+					result = await redisService.HashDeleteAsync($"{RedisPrefix.MovieView}", ids);
+					result = await redisService.HashDeleteAsync($"{RedisPrefix.MovieLike}", ids);
 				}
 				if (result)
 				{

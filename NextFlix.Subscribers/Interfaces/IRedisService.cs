@@ -7,6 +7,7 @@
 		Task<bool> StringDeleteAsync(string key);
 		Task<bool> StringDeleteAsync(IEnumerable<string> keys);
 		Task<bool> HashDeleteAsync(string hashKey, IEnumerable<int> ids);
+		Task<List<int>> HashGetAsync(string hashKey);
 		public bool IsConnected { get; set; }
 		public event EventHandler<bool> OnConnectionStatusChanged;
 	}

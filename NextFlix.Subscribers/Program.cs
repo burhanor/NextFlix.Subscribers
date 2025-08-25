@@ -50,6 +50,9 @@ namespace NextFlix.Subscribers
 			services.AddSingleton<SourceReceived>();
 			services.AddSingleton<UserReceived>();
 			services.AddSingleton<MovieReceived>();
+			services.AddSingleton<MovieLikeReceived>();
+			services.AddSingleton<MovieViewReceived>();
+			services.AddSingleton<HangfireService>();
 			services.AddTransient<MovieService>();
 			services.AddSingleton<Form1>(); 
 
