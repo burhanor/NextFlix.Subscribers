@@ -3,7 +3,6 @@ using NextFlix.Subscribers.ConfigurationManagers;
 using NextFlix.Subscribers.Interfaces;
 using NextFlix.Subscribers.Models.MeiliSearch;
 using NextFlix.Subscribers.Models.Movie;
-using System.Threading.Tasks;
 
 namespace NextFlix.Subscribers.Services
 {
@@ -37,6 +36,11 @@ namespace NextFlix.Subscribers.Services
 				  "castIds",
 				  "duration",
 				  "publishDate",
+			}).Wait();
+			_index.UpdateSortableAttributesAsync(new[] {
+				  "viewCount",
+				  "rating",
+				  "publishDate"
 			}).Wait();
 		}
 
@@ -89,8 +93,10 @@ namespace NextFlix.Subscribers.Services
 				TagIds = movie.Tags?.Count(m => m.Status == Enums.Status.ACCEPTED) > 0 ? movie.Tags.Where(m => m.Status == Enums.Status.ACCEPTED).Select(c => c.Id).ToList() : [],
 				ChannelIds = movie.Channels?.Count(m => m.Status == Enums.Status.ACCEPTED) > 0 ? movie.Channels.Where(m => m.Status == Enums.Status.ACCEPTED).Select(c => c.Id).ToList() : [],
 				CountryIds = movie.Countries?.Count(m => m.Status == Enums.Status.ACCEPTED) > 0 ? movie.Countries.Where(m => m.Status == Enums.Status.ACCEPTED).Select(c => c.Id).ToList() : [],
-				CastIds = movie.Casts?.Count(m => m.Status == Enums.Status.ACCEPTED) > 0 ? movie.Casts.Where(m => m.Status == Enums.Status.ACCEPTED).Select(c => c.Id).ToList() : []
-
+				CastIds = movie.Casts?.Count(m => m.Status == Enums.Status.ACCEPTED) > 0 ? movie.Casts.Where(m => m.Status == Enums.Status.ACCEPTED).Select(c => c.Id).ToList() : [],
+				ViewCount = movie.ViewCount,
+				Rating = movie.Votes != null && movie.Votes.Count > 0 ? movie.Votes.Sum(v => (int)v.Vote * v.VoteCount)
+				/ (double)movie.Votes.Sum(v => v.VoteCount) : 50
 
 			};
 		}

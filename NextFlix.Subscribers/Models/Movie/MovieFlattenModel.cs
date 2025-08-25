@@ -19,6 +19,8 @@
 		public List<int>? ChannelIds { get; set; }
 		public List<int>? CountryIds { get; set; }
 		public List<int>? CastIds { get; set; }
+		public int ViewCount { get; set; }
+		public double Rating { get; set; }
 
 	}
 }

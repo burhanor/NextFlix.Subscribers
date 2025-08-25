@@ -31,7 +31,11 @@ namespace NextFlix.Subscribers.Receiveds
 				{
 					result = await meiliSearchService.AddOrUpdateMovieAsync(movie);
 				}
-				return result;
+				else
+				{
+					result = await meiliSearchService.DeleteMoviesAsync([movie.Id]);
+				}
+					return result;
 			}
 			catch (Exception ex)
 			{
